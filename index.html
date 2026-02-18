@@ -3,6 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Lunar Calendar">
+    <link rel="apple-touch-icon" href="icon.png">
     <title>Lunar & Cycle Tracker</title>
     <style>
         * {
@@ -466,12 +470,10 @@
         }
         
         .daily-log-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            grid-template-rows: repeat(17, auto);
-            grid-auto-flow: column;
+            display: flex;
+            flex-direction: column;
             gap: 2px;
-            max-width: 900px;
+            max-width: 600px;
             margin: 0 auto;
         }
         
@@ -524,6 +526,29 @@
         .daily-log-input:focus {
             outline: none;
             background: rgba(255,255,255,0.25);
+        }
+        
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            .combined-cycles {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 4px;
+                padding: 10px 20px;
+                overflow-x: visible;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .combined-day {
+                min-width: 40px;
+                margin-right: 0;
+                padding-bottom: 0;
+            }
+            
+            .day {
+                min-width: 40px;
+            }
         }
     </style>
 </head>
@@ -871,13 +896,15 @@
                 combinedContainer.appendChild(combinedDay);
             }
             
-            // Auto-scroll to center (today is at index 17)
-            setTimeout(() => {
-                const dayWidth = 44; // 40px width + 4px gap
-                const containerWidth = combinedContainer.offsetWidth;
-                const scrollPosition = (todayIndex * dayWidth) - (containerWidth / 2) + (dayWidth / 2);
-                combinedContainer.scrollLeft = Math.max(0, scrollPosition);
-            }, 100);
+            // Auto-scroll to center on desktop only
+            if (window.innerWidth > 768) {
+                setTimeout(() => {
+                    const dayWidth = 44;
+                    const containerWidth = combinedContainer.offsetWidth;
+                    const scrollPosition = (todayIndex * dayWidth) - (containerWidth / 2) + (dayWidth / 2);
+                    combinedContainer.scrollLeft = Math.max(0, scrollPosition);
+                }, 100);
+            }
         }
         
         // Toggle daily log visibility
