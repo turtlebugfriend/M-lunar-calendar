@@ -531,23 +531,15 @@
         /* Mobile optimizations */
         @media (max-width: 768px) {
             .combined-cycles {
-                display: flex;
-                flex-wrap: wrap;
-                justify-content: center;
+                display: grid;
+                grid-template-columns: repeat(5, 1fr);
                 gap: 4px;
-                padding: 10px 20px;
+                padding: 10px;
                 overflow-x: visible;
-                -webkit-overflow-scrolling: touch;
             }
             
             .combined-day {
-                min-width: 40px;
                 margin-right: 0;
-                padding-bottom: 0;
-            }
-            
-            .day {
-                min-width: 40px;
             }
         }
     </style>
@@ -829,12 +821,16 @@
             // Calculate how many days since last period to find where to start
             const daysSinceLastPeriod = Math.floor((today - lastPeriodDate) / (1000 * 60 * 60 * 24));
             
-            let todayIndex = 17; // Today will be at index 17 (17 days shown before it)
+            // Determine number of days to show based on screen size
+            const isMobile = window.innerWidth <= 768;
+            const totalDays = isMobile ? 15 : 30;
+            const daysBeforeToday = isMobile ? 7 : 15;
+            
+            let todayIndex = daysBeforeToday;
             let lastMonth = -1;
             
-            // Show 35 days total: 17 before today, today, and 17 after
-            const totalDays = 35;
-            const startOffset = daysSinceLastPeriod - 17;
+            // Show days centered around today
+            const startOffset = daysSinceLastPeriod - daysBeforeToday;
             
             for (let i = 0; i < totalDays; i++) {
                 const currentDate = new Date(lastPeriodDate);
@@ -905,6 +901,9 @@
                     combinedContainer.scrollLeft = Math.max(0, scrollPosition);
                 }, 100);
             }
+            
+            // Regenerate daily log with new cycle length
+            generateDailyLog();
         }
         
         // Toggle daily log visibility
